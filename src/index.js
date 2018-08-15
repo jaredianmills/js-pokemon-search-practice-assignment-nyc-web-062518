@@ -9,6 +9,19 @@ document.addEventListener("DOMContentLoaded", function() {
     displayPokemon(input)
   })
 
+  pokemonContainer.addEventListener("click", (event) => {
+    if (event.target.innerText === "flip card") {
+      let pokeImg = event.target.parentNode.querySelector("img")
+      if (pokeImg.src.includes('/back/')) {
+        let targetedPokemon = pokemonData.pokemons.find(poke => poke.sprites.back === pokeImg.src)
+        pokeImg.src = targetedPokemon.sprites.front
+      } else {
+        let targetedPokemon = pokemonData.pokemons.find(poke => poke.sprites.front === pokeImg.src)
+        pokeImg.src = targetedPokemon.sprites.back
+      }
+    }
+  })
+
   const filterPokemon = (input) => {
     let selectedPokemon = pokemonData.pokemons.filter(pokemon => pokemon.name.includes(input))
     // console.log(selectedPokemon);
@@ -30,17 +43,28 @@ document.addEventListener("DOMContentLoaded", function() {
         <p style="padding:10px;" class="center-text flip-image" data-pokename="${pokemon.name}" data-action="flip-image">flip card</p>
         </div>`
 
-      pokemonContainer.appendChild(div)
+        checkForDuplicates(div, pokemon)
     })
+  }
+
+  const checkForDuplicates = (div, pokemon) => {
+    let pokemonDivs = pokemonContainer.children
+
+    if (!Array.from(pokemonDivs).some(div => div.querySelector('h1').innerText === pokemon.name)) {
+      pokemonContainer.appendChild(div)
+    }
   }
 
   const displayPokemon = (input) => {
     createPokemonElement(input)
     let pokemonDivs = pokemonContainer.children
     Array.from(pokemonDivs).forEach(div => {
+      // debugger
       if (input === "") {
         div.remove()
-      } 
+      } else if (!div.querySelector('h1').innerText.includes(input)) {
+        div.remove()
+      }
     })
   }
 
